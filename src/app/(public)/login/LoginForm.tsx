@@ -11,18 +11,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { EyeIcon } from "lucide-react";
+import InputError from "@/components/ui/InputError";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const onSubmit = async () => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState<Record<string, []>>({});
+  const SubmitForm = async (e: FormEvent) => {
     try {
+      e.preventDefault();
       console.log();
     } catch (err) {
       console.log(err);
@@ -38,7 +41,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={SubmitForm}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
@@ -50,36 +53,50 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                 />
+                <InputError messages={errors.email} />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  id="password"
-                  type="password"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    id="password"
+                    type={isPasswordVisible ? "text" : "password"}
+                    required
+                  />
+                  <EyeIcon
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    size={20}
+                    color="#555555"
+                    className="absolute right-2.5 top-2 cursor-pointer "
+                  />
+                  <InputError messages={errors.password} />
+                </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Button onClick={onSubmit} type="button" className="w-full">
+                <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button onClick={()=>{
-                }} variant="outline" type="button" className="w-full">
+                <Button
+                  onClick={() => {}}
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                >
                   Login with Google
                 </Button>
               </div>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href={"/register"} className="underline underline-offset-2">
-                Sign Up
-              </Link>
-            </div>
           </form>
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href={"/register"} className="underline underline-offset-2">
+              Sign Up
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
