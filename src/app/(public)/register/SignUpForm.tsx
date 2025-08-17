@@ -1,124 +1,183 @@
 "use client";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormEvent, useState } from "react";
-import { EyeIcon } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { useState } from "react";
+import { CircleAlert, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
-import InputError from "@/components/ui/InputError";
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isPasswordConfirmationVisible, setIsPasswordConfirmationVisible] =
-    useState(false);
-  const [errors, setErrors] = useState<Record<string, []>>({});
 
-  const SubmitForm = async (event: FormEvent) => {
-    event.preventDefault();
+export function SignUpForm() {
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-  return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Sign up to your account</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={SubmitForm}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  id="name"
-                  type="name"
-                  placeholder="John Do"
-                  required
-                />
-              </div>
-              <InputError messages={errors.name} />
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-                <InputError messages={errors.email} />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <div className="relative">
-                  <Input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    id="password"
-                    type={isPasswordVisible ? "text" : "password"}
-                    required
-                  />
-                  <EyeIcon
-                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                    size={20}
-                    color="#555555"
-                    className="absolute right-2.5 top-2 cursor-pointer "
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="passwordConfirmation">
-                    Password Confirmation
-                  </Label>
-                </div>
-                <div className="relative">
-                  <Input
-                    value={passwordConfirmation}
-                    onChange={(e) => setPasswordConfirmation(e.target.value)}
-                    id="passwordConfirmation"
-                    type={isPasswordConfirmationVisible ? "text" : "password"}
-                    required
-                  />
-                  <EyeIcon
-                    onClick={() =>
-                      setIsPasswordConfirmationVisible(
-                        !isPasswordConfirmationVisible
-                      )
-                    }
-                    size={20}
-                    color="#555555"
-                    className="absolute right-2.5 top-2 cursor-pointer "
-                  />
 
-                  <InputError messages={errors.password} />
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Sign Up
-                </Button>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center
+     bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900
+      dark:to-gray-950 p-4">
+      <Card className="w-full max-w-md shadow-lg border-x-0 border-b-0 border-t-4 border-primary">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-2">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-center text-2xl font-bold">
+            Create an Account
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter your details to create your account
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          {error && (
+            <div
+              className="flex items-center gap-2
+            bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4"
+            >
+              <CircleAlert size={16} />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Name
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  name="name"
+                  type="name"
+                  placeholder="John Doe"
+                  className="pl-10"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="your.email@example.com"
+                  className="pl-10"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="pl-10"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                Confirm Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="pl-10"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Creating Account..." : "Sign Up"}
+            </Button>
           </form>
-            <div className="mt-4 text-center text-sm">
-              have an account?{" "}
-              <Link href="/login" className="underline underline-offset-4">
-                Log in
-              </Link>
-            </div>
         </CardContent>
+
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
